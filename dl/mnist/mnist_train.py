@@ -14,7 +14,7 @@ REGULARAZTION_RATE = 0.0001
 TRAINING_STEPS = 30000
 MOVING_AVERAGE_DECAY = 0.99
 #模型保存的路径和文件名
-MODEL_SAVE_PATH = "/path/to/model"
+MODEL_SAVE_PATH = "/home/keith/code/dl/mnist/mnist_model"
 MODEL_NAME = "model.ckpt"
 
 def train(mnist):
@@ -40,4 +40,25 @@ def train(mnist):
     #初始化TensorFlow模型持久化类
     saver = tf.train.Saver()
     with tf.Session() as sess:
-        
+        tf.global_variables_initializer().run()
+
+        for i in range(TRAINING_STEPS):
+            xs, ys = mnist.train.next_bnatch(BATCH_SIZE)
+            _, loss_value, step = sess.run([train_op, loss, global_step], feed_dict={x: xs, y_: ys})
+
+            #每1000轮保存一次模型
+            if i % 1000 == 0:
+                #输出当前的训练情况，只输出模型在当前训练batch上的损失函数大小
+                #通过损失函数的大小可以大概了解训练的情况
+                #验证数据集上的正确率信息会有一个单独的程序来生成
+                print("After %d training step(s), loss on training batch is %g." %(step, loss_value))
+
+                #保存当前的模型，这里给出了global_step参数，这样可以让每个被保存模型的文件名末尾加上训练的轮数
+                saver.save(sess, os.path.join(MODEL_SAVE_PATH, MODEL_NAME), global_step=global_step)
+
+def main(argv = None):
+    mnist = input_data.read_data_sets("/home/keith/code/dl/mnist/mnist_data", one_hot = True)
+    train(mnist)
+
+if __name__ == "__main__":
+    tf.app.run()
