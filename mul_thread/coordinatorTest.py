@@ -19,7 +19,7 @@ def MyLoop(coord, worker_id):
 #声明一个tf.train.Coordinator类来协同多个线程
 coord = tf.train.Coordinator()
 #创建5个线程
-threads = [threading.Thread(target=MyLoop, args=(coord, i, )) for i in xrange(5)]
+threads = [threading.Thread(target=MyLoop, args=(coord, i, )) for i in range(5)]
 #启动所有线程
 for t in threads:
     t.start()
